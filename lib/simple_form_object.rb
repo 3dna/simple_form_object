@@ -55,6 +55,10 @@ module SimpleFormObject
     attribs
   end
 
+  def persisted?
+    false
+  end
+
   class Attribute
     def initialize(name, type = nil, options)
       @name = name
