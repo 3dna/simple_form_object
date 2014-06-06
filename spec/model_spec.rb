@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'SimpleFormObject' do
-  let(:base_klass) { Class.new.tap{|k| k.include SimpleFormObject } }
+  let(:base_klass) { Class.new.tap{|k| k.send(:include, SimpleFormObject) } }
   let(:klass) { base_klass }
   let(:instance) { klass.new }
 
@@ -27,7 +27,7 @@ describe 'SimpleFormObject' do
     end
 
     describe 'type' do
-      let(:types) { %i(boolean string email url tel password search text file hidden integer float decimal range datetime date time select radio_buttons check_boxes country time_zone) }
+      let(:types) { %w(boolean string email url tel password search text file hidden integer float decimal range datetime date time select radio_buttons check_boxes country time_zone).map(&:to_sym) }
 
       let(:type) { :boolean }
       let(:attr) { :la }
@@ -79,8 +79,8 @@ describe 'SimpleFormObject' do
       expect(klass.model_name).to be_a_kind_of ActiveModel::Name
     end
 
-    it 'should remove Form from the name of the class' do
-      expect(klass.model_name.name).to eq "Klass"
+    it 'returns class name as a model name' do
+      expect(klass.model_name).to eq "KlassForm"
     end
   end
 end

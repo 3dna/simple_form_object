@@ -5,7 +5,9 @@ require "active_support"
 module SimpleFormObject
   extend ActiveSupport::Concern
 
-  include ActiveModel::Model
+   include ActiveModel::Naming
+   include ActiveModel::Conversion
+   include ActiveModel::Validations
 
   module ClassMethods
     def attribute(name, type = :string, options = {})
@@ -23,7 +25,7 @@ module SimpleFormObject
     end
 
     def model_name
-      ActiveModel::Name.new(self, nil, self.to_s.gsub(/Form$/, ''))
+      ActiveModel::Name.new(self, nil)
     end
   end
 
@@ -31,8 +33,15 @@ module SimpleFormObject
     self.class._attribute(attribute).fake_column
   end
 
+  def read_attribute_for_validation(key)
+    attributes[key]
+  end
+
   def initialize(attributes={})
-    super
+    attributes.each do |attr, value|
+      self.public_send("#{attr}=", value)
+    end if attributes
+
     self.class._attributes.each do |attribute|
       attribute.apply_default_to(self)
     end
